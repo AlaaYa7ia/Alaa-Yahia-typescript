@@ -15,4 +15,10 @@ router.post(
   controller.img_resize
 );
 
+router.post(
+  "/img-crop", //?:hight&:width
+  files_middleware.single("filename"),
+  controller.img_crop
+);
+
 module.exports = router;

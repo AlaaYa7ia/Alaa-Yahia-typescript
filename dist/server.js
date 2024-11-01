@@ -16,6 +16,8 @@ app.get("/", (req, res) => {
     Actions Available:
     POST /img-upload -> uplaod the image in the body.
     POST /img-resize/?:hight&:width -> uplaod the image in the body.
+    POST /img-crop/?:hight&:width -> uplaod the image in the body.
+
     `);
 });
 app.listen(port, () => {

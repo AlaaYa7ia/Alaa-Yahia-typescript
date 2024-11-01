@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const sharp = require("sharp");
 const path = require("path");
-const fs = require("fs");
 const img_upload = (req, res) => {
     try {
         res.send({
@@ -33,15 +32,14 @@ const img_resize = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 .status(400)
                 .send({ status: "error", message: "No file uploaded." });
         }
-        const outputPath = path.join(__dirname, "../../uploads", "resized-" + req.file.filename);
+        const outputPath = path.join(__dirname, "../../uploads/resized/", "resized-" + req.file.filename);
         const hight = req.query.hight;
         const width = req.query.width;
         console.log(hight, width, req.file.path, req.file.filename);
         yield sharp(req.file.path)
-            .resize(parseInt(width), parseInt(hight))
+            .resize(parseInt(width), parseInt(hight), { fit: "fill" })
             .jpeg({ quality: 80 })
             .toFile(outputPath);
-        fs.unlinkSync(req.file.path);
         res.send({
             status: "success",
             message: "File uploaded and processed successfully!",
@@ -56,7 +54,43 @@ const img_resize = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             .send({ status: "error", message: "Failed to process image." });
     }
 });
+const img_crop = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // make with resize one function rout?
+    try {
+        if (!req.file) {
+            return res
+                .status(400)
+                .send({ status: "error", message: "No file uploaded." });
+        }
+        const outputPath = path.join(__dirname, "../../uploads/cropped/", "cropped-" + req.file.filename);
+        const hight = req.query.hight;
+        const width = req.query.width;
+        console.log(hight, width, req.file.path, req.file.filename);
+        yield sharp(req.file.path)
+            .resize({
+            width: 200,
+            height: 200,
+            fit: sharp.fit.cover,
+            position: sharp.strategy.entropy,
+        })
+            .jpeg({ quality: 80 })
+            .toFile(outputPath);
+        res.send({
+            status: "success",
+            message: "File uploaded and processed successfully!",
+            filename: `cropped-${req.file.filename}`,
+            url: `/uploads/cropped-${req.file.filename}`,
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res
+            .status(500)
+            .send({ status: "error", message: "Failed to process image." });
+    }
+});
 module.exports = {
     img_upload,
     img_resize,
+    img_crop,
 };

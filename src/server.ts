@@ -17,6 +17,8 @@ app.get("/", (req: Request, res: Response) => {
     Actions Available:
     POST /img-upload -> uplaod the image in the body.
     POST /img-resize/?:hight&:width -> uplaod the image in the body.
+    POST /img-crop/?:hight&:width&:top$:left -> uplaod the image in the body.
+
     `);
 });
 
