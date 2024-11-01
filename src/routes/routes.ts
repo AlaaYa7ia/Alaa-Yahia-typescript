@@ -1,12 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/controller");
-const uploadMiddleware = require("../middlewares/files_middleware");
+const files_middleware = require("../middlewares/files_middleware");
 
 router.post(
   "/img-upload",
-  uploadMiddleware.single("filename"),
+  files_middleware.single("filename"),
   controller.img_upload
+);
+
+router.post(
+  "/img-resize", //?:hight&:width
+  files_middleware.single("filename"),
+  controller.img_resize
 );
 
 module.exports = router;
