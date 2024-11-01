@@ -1,21 +1,27 @@
-// Import the 'express' module along with 'Request' and 'Response' types from express
 import express, { Request, Response } from "express";
+const path = require("path");
+// const bodyParser = require("body-parser");
 
-// Create an Express application
 const app = express();
+const routes = require("./routes/routes");
 
-// Specify the port number for the server
+app.set("view engine", "ejs");
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use(routes);
+
 const port: number = 3000;
 
-// Define a route for the root path ('/')
 app.get("/", (req: Request, res: Response) => {
-  // Send a response to the client
-
-  res.send("Hello, TypeScript + Node.js + Express + nodemon config!");
+  res.send(`Welcome to Image Processing API
+    Actions Available:
+    POST /img-upload
+    `);
 });
 
-// Start the server and listen on the specified port
 app.listen(port, () => {
-  // Log a message when the server is successfully running
   console.log(`Server is running on http://localhost:${port}`);
 });
