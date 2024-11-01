@@ -24,8 +24,13 @@ router.post(
 router.post(
   "/img-downlaod", //?:type&:name
   files_middleware.single("filename"),
-
   controller.img_download
+);
+
+router.post(
+  "/img-filter", //?:/filter
+  files_middleware.single("filename"),
+  controller.img_filter
 );
 
 module.exports = router;

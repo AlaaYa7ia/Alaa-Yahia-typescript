@@ -9,5 +9,7 @@ files_middleware.single("filename"), controller.img_resize);
 router.post("/img-crop", //?:hight&:width&:top$:left
 files_middleware.single("filename"), controller.img_crop);
 router.post("/img-downlaod", //?:type&:name
-controller.img_download);
+files_middleware.single("filename"), controller.img_download);
+router.post("/img-filter", //?:/filter
+files_middleware.single("filename"), controller.img_filter);
 module.exports = router;

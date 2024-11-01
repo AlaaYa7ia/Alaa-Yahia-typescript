@@ -35,7 +35,6 @@ const img_resize = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const outputPath = path.join(__dirname, "../../uploads/resized/", "resized-" + req.file.filename);
         const hight = req.query.hight;
         const width = req.query.width;
-        console.log(hight, width, req.file.path, req.file.filename);
         yield sharp(req.file.path)
             .resize(parseInt(width), parseInt(hight), { fit: "fill" })
             .toFile(outputPath);
@@ -65,7 +64,6 @@ const img_crop = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const top = req.query.top;
         const width = req.query.width;
         const hight = req.query.hight;
-        console.log(hight, width, req.file.path, req.file.filename);
         const cropOptions = {
             left: parseInt(left), // X coordinate (horizontal offset)
             top: parseInt(top), // Y coordinate (vertical offset)
@@ -94,28 +92,8 @@ const img_download = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 .status(400)
                 .send({ status: "error", message: "No file uploaded." });
         }
-        const outputFilename = `${Date.now()}-${req.file.filename}`; // Name for the processed image
-        let outputPath = path.join(__dirname, "../../uploads", outputFilename);
-        // const type: any = req.query.type;
-        // switch (type) {
-        //   case "cropped":
-        //     outputPath = path.join(
-        //       __dirname,
-        //       "../../uploads/cropped",
-        //       outputFilename
-        //     );
-        //     break;
-        //   case "resized":
-        //     outputPath = path.join(
-        //       __dirname,
-        //       "../../uploads/resized",
-        //       outputFilename
-        //     );
-        //     break;
-        //   default:
-        //     outputPath = path.join(__dirname, "../../uploads", outputFilename);
-        // }
-        res.download(outputPath, outputFilename, (err) => {
+        const outputPath = path.join(__dirname, "../../uploads", `${req.file.filename}`);
+        res.download(outputPath, (err) => {
             if (err) {
                 console.error(err);
                 res
@@ -132,9 +110,46 @@ const img_download = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
 });
+const img_filter = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        if (!req.file) {
+            return res
+                .status(400)
+                .send({ status: "error", message: "No file uploaded." });
+        }
+        const filter = req.query.filter; //grayscale, blur
+        const outputPath = path.join(__dirname, "../../uploads/cropped/", "cropped-" + req.file.filename);
+        const left = req.query.left;
+        const top = req.query.top;
+        const width = req.query.width;
+        const hight = req.query.hight;
+        let image = sharp(req.file.path);
+        yield sharp(req.file.path);
+        if (filter === "grayscale") {
+            image = image.grayscale();
+        }
+        if (filter === "blur") {
+            image = image.blur(5);
+        }
+        yield image.toFile(outputPath);
+        res.send({
+            status: "success",
+            message: "File uploaded and processed successfully!",
+            filename: `cropped-${req.file.filename}`,
+            url: `/uploads/cropped-${req.file.filename}`,
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res
+            .status(500)
+            .send({ status: "error", message: "Failed to process image." });
+    }
+});
 module.exports = {
     img_upload,
     img_resize,
     img_crop,
     img_download,
+    img_filter,
 };

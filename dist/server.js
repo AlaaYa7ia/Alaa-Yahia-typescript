@@ -18,6 +18,7 @@ app.get("/", (req, res) => {
     POST /img-resize/?:hight&:width -> uplaod the image in the body.
     POST /img-crop/?:hight&:width&:top$:left -> uplaod the image in the body.
     POST /img-downlaod/?:type&:name
+    POST /img-filter/?:filter -> grayscale or blur -> uplaod the image in the body.
 
     `);
 });

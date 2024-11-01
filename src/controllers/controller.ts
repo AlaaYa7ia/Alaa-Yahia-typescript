@@ -43,7 +43,6 @@ const img_resize = async (req: Request, res: Response) => {
 
     const hight: any = req.query.hight;
     const width: any = req.query.width;
-    console.log(hight, width, req.file.path, req.file.filename);
 
     await sharp(req.file.path)
       .resize(parseInt(width), parseInt(hight), { fit: "fill" })
@@ -80,8 +79,6 @@ const img_crop = async (req: Request, res: Response) => {
     const top: any = req.query.top;
     const width: any = req.query.width;
     const hight: any = req.query.hight;
-
-    console.log(hight, width, req.file.path, req.file.filename);
 
     const cropOptions = {
       left: parseInt(left), // X coordinate (horizontal offset)
@@ -137,9 +134,53 @@ const img_download = async (req: Request, res: Response) => {
   }
 };
 
+const img_filter = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res
+        .status(400)
+        .send({ status: "error", message: "No file uploaded." });
+    }
+    const filter = req.query.filter; //grayscale, blur
+    const outputPath = path.join(
+      __dirname,
+      `../../uploads/${filter}/`,
+      `${filter}ed-` + req.file.filename
+    );
+
+    let image = sharp(req.file.path);
+    await sharp(req.file.path);
+
+    if (filter === "grayscale") {
+      image = image.grayscale();
+    } else if (filter === "blur") {
+      image = image.blur(5);
+    } else {
+      return res
+        .status(400)
+        .send({ status: "error", message: "No filter query parameter found." });
+    }
+
+    await image.toFile(outputPath);
+    res.send({
+      status: "success",
+      message: "File uploaded and processed successfully!",
+      filename: `${filter}-${req.file.filename}`,
+      url: `/uploads/${filter}-${req.file.filename}`,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res
+      .status(500)
+      .send({ status: "error", message: "Failed to process image." });
+  }
+};
+
 module.exports = {
   img_upload,
   img_resize,
   img_crop,
   img_download,
+  img_filter,
 };
