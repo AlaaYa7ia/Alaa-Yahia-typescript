@@ -64,7 +64,6 @@ const img_resize = async (req: Request, res: Response) => {
 };
 
 const img_crop = async (req: Request, res: Response) => {
-  // make with resize one function rout?
   try {
     if (!req.file) {
       return res
@@ -107,8 +106,40 @@ const img_crop = async (req: Request, res: Response) => {
   }
 };
 
+const img_download = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res
+        .status(400)
+        .send({ status: "error", message: "No file uploaded." });
+    }
+
+    const outputPath = path.join(
+      __dirname,
+      "../../uploads",
+      `${req.file.filename}`
+    );
+
+    res.download(outputPath, (err: any) => {
+      if (err) {
+        console.error(err);
+        res
+          .status(500)
+          .send({ status: "error", message: "Failed to download image." });
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({
+      status: "error",
+      message: "Failed to process image for download.",
+    });
+  }
+};
+
 module.exports = {
   img_upload,
   img_resize,
   img_crop,
+  img_download,
 };

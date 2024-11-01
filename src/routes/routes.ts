@@ -16,9 +16,16 @@ router.post(
 );
 
 router.post(
-  "/img-crop", //?:hight&:width
+  "/img-crop", //?:hight&:width&:top$:left
   files_middleware.single("filename"),
   controller.img_crop
+);
+
+router.post(
+  "/img-downlaod", //?:type&:name
+  files_middleware.single("filename"),
+
+  controller.img_download
 );
 
 module.exports = router;
