@@ -6,7 +6,7 @@ const routes = require("./routes/routes");
 
 app.set("view engine", "ejs");
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); //se if it works to change it to "public" folder
 
 app.use(routes);
 

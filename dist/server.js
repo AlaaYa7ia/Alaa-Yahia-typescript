@@ -8,7 +8,7 @@ const path = require("path");
 const app = (0, express_1.default)();
 const routes = require("./routes/routes");
 app.set("view engine", "ejs");
-app.use("/uploads", express_1.default.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express_1.default.static(path.join(__dirname, "uploads"))); //se if it works to change it to "public" folder
 app.use(routes);
 const port = 3000;
 app.get("/", (req, res) => {

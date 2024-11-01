@@ -148,13 +148,34 @@ const img_filter = async (req: Request, res: Response) => {
       `${filter}ed-` + req.file.filename
     );
 
+    const watermarkPath = path.join(
+      __dirname,
+      "../../public/assets",
+      "watermark.jpg"
+    );
+
     let image = sharp(req.file.path);
     await sharp(req.file.path);
 
     if (filter === "grayscale") {
+      //make it case -swich
       image = image.grayscale();
     } else if (filter === "blur") {
       image = image.blur(5);
+    } else if (filter == "watermark") {
+      const metadata = await image.metadata();
+      const watermarkImage = await sharp(watermarkPath)
+        .resize({ width: metadata.width, height: metadata.height }) // Resize watermark to desired size
+        .toBuffer();
+
+      // Composite watermark onto the main image
+      image = image.composite([
+        {
+          input: watermarkImage,
+          gravity: "southeast", // Position watermark at the bottom-right corner
+          blend: "overlay", // Apply overlay blend mode
+        },
+      ]);
     } else {
       return res
         .status(400)

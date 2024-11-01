@@ -118,25 +118,41 @@ const img_filter = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 .send({ status: "error", message: "No file uploaded." });
         }
         const filter = req.query.filter; //grayscale, blur
-        const outputPath = path.join(__dirname, "../../uploads/cropped/", "cropped-" + req.file.filename);
-        const left = req.query.left;
-        const top = req.query.top;
-        const width = req.query.width;
-        const hight = req.query.hight;
+        const outputPath = path.join(__dirname, `../../uploads/${filter}/`, `${filter}ed-` + req.file.filename);
+        const watermarkPath = path.join(__dirname, "../../public/assets", "watermark.jpg");
         let image = sharp(req.file.path);
         yield sharp(req.file.path);
         if (filter === "grayscale") {
+            //make it case -swich
             image = image.grayscale();
         }
-        if (filter === "blur") {
+        else if (filter === "blur") {
             image = image.blur(5);
+        }
+        else if (filter == "watermark") {
+            const watermarkImage = yield sharp(watermarkPath)
+                .resize({ width: 100 }) // Resize watermark to desired size
+                .toBuffer();
+            // Composite watermark onto the main image
+            image = image.composite([
+                {
+                    input: watermarkImage,
+                    gravity: "southeast", // Position watermark at the bottom-right corner
+                    blend: "overlay", // Apply overlay blend mode
+                },
+            ]);
+        }
+        else {
+            return res
+                .status(400)
+                .send({ status: "error", message: "No filter query parameter found." });
         }
         yield image.toFile(outputPath);
         res.send({
             status: "success",
             message: "File uploaded and processed successfully!",
-            filename: `cropped-${req.file.filename}`,
-            url: `/uploads/cropped-${req.file.filename}`,
+            filename: `${filter}-${req.file.filename}`,
+            url: `/uploads/${filter}-${req.file.filename}`,
         });
     }
     catch (err) {
