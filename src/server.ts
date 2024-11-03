@@ -8,8 +8,6 @@ app.set("view engine", "ejs");
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads"))); //se if it works to change it to "public" folder
 
-app.use(routes);
-
 const port: number = 3000;
 let server: any;
 
@@ -23,6 +21,13 @@ app.get("/", (req: Request, res: Response) => {
     POST /img-filter/?:filter -> grayscale or blur -> uplaod the image in the body.
 
     `);
+});
+
+app.use(routes);
+
+app.use((err: Error, req: Request, res: Response, next: any) => {
+  console.error(err.stack);
+  res.status(500).send(err.message);
 });
 
 function start() {

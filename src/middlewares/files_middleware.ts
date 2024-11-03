@@ -1,4 +1,6 @@
 const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
 
 const storage = multer.diskStorage({
   destination: function (
@@ -10,10 +12,17 @@ const storage = multer.diskStorage({
   },
   filename: function (
     req: any,
-    file: { originalname: any },
-    cb: (arg0: null, arg1: any) => void
+    file: { originalname: string },
+    cb: (arg0: Error | null, arg1?: string) => void
   ) {
-    cb(null, file.originalname);
+    const filePath = path.join("uploads", file.originalname);
+
+    // Check if file already exists
+    if (fs.existsSync(filePath)) {
+      return cb(new Error("File already exists"), undefined);
+    } else {
+      cb(null, file.originalname);
+    }
   },
 });
 
