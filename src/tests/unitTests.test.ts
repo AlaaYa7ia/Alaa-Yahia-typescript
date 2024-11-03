@@ -16,12 +16,10 @@ async function makeMultipartRequest(
     const req = http.request(options, (res) => {
       let data = "";
 
-      // Collect data chunks
       res.on("data", (chunk) => {
         data += chunk;
       });
 
-      // Handle end of response
       res.on("end", () => {
         try {
           const parsedBody = JSON.parse(data);
@@ -32,7 +30,6 @@ async function makeMultipartRequest(
       });
     });
 
-    // Handle request errors
     req.on("error", reject);
 
     // Set a timeout to prevent the request from hanging indefinitely
@@ -40,28 +37,9 @@ async function makeMultipartRequest(
       req.destroy(new Error("Request timed out"));
     });
 
-    // Pipe the formData to the request
     formData.pipe(req);
   });
 }
-
-// describe("Image Processing API", () => {
-// let server: http.Server;
-
-// before((done: any) => {
-//   server = app.listen(port, done);
-// });
-
-// after((done: any) => {
-//   server.close(done);
-//   stop();
-// });
-
-// afterEach(() => {
-//   setTimeout(() => {}, 5000);
-// });
-
-//finally??
 
 describe("POST /img-upload", () => {
   let server: http.Server;
@@ -97,24 +75,22 @@ describe("POST /img-upload", () => {
     assert.equal(res.body.message, "File uploaded successfully!");
   });
 
-  //should fix my code
-  // it("should handle upload errors", async () => {
-  //   const form = new FormData();
+  it("should handle upload errors", async () => {
+    const form = new FormData();
 
-  //   const options = {
-  //     hostname: "localhost",
-  //     port: port,
-  //     path: "/img-upload",
-  //     method: "POST",
-  //     headers: form.getHeaders(),
-  //   };
+    const options = {
+      hostname: "localhost",
+      port: port,
+      path: "/img-upload",
+      method: "POST",
+    };
 
-  //   const res = await makeMultipartRequest(options, form);
+    const res = await makeMultipartRequest(options, form);
 
-  //   assert.equal(res.statusCode, 400);
-  //   assert.equal(res.body.status, "error");
-  //   assert.equal(res.body.message, "Failed to upload file.");
-  // });
+    assert.equal(res.statusCode, 400);
+    assert.equal(res.body.status, "error");
+    assert.equal(res.body.message, "Failed to upload file.");
+  });
 });
 
 describe("POST /img-resize", () => {

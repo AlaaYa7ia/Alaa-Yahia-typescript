@@ -16,6 +16,11 @@ declare global {
 
 export const img_upload = (req: Request, res: Response) => {
   try {
+    if (!req.file) {
+      return res
+        .status(400)
+        .send({ status: "error", message: "Failed to upload file." });
+    }
     res.send({
       status: "success",
       message: "File uploaded successfully!",
