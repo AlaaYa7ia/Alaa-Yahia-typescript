@@ -6,6 +6,8 @@ import path from "path";
 import FormData from "form-data";
 import fs from "fs";
 
+//TODO: split into files.
+
 const port: number = 8000;
 
 async function makeMultipartRequest(
