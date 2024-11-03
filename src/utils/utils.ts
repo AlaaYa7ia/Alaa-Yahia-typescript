@@ -3,7 +3,7 @@
 //Error Handling
 // what is the best practic?
 
-//change all typos hight
+//change all typos height
 
 //deal with file allredy exists
 

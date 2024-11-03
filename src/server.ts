@@ -17,8 +17,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send(`Welcome to Image Processing API
     Actions Available:
     POST /img-upload -> uplaod the image in the body.
-    POST /img-resize/?:hight&:width -> uplaod the image in the body.
-    POST /img-crop/?:hight&:width&:top$:left -> uplaod the image in the body.
+    POST /img-resize/?:height&:width -> uplaod the image in the body.
+    POST /img-crop/?:height&:width&:top$:left -> uplaod the image in the body.
     POST /img-downlaod/
     POST /img-filter/?:filter -> grayscale or blur -> uplaod the image in the body.
 

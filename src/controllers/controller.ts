@@ -46,11 +46,11 @@ export const img_resize = async (req: Request, res: Response) => {
       "resized-" + req.file.filename
     );
 
-    const hight: any = req.query.hight;
+    const height: any = req.query.height;
     const width: any = req.query.width;
 
     await sharp(req.file.path)
-      .resize(parseInt(width), parseInt(hight), { fit: "fill" })
+      .resize(parseInt(width), parseInt(height), { fit: "fill" })
       .toFile(outputPath);
     res.send({
       status: "success",
@@ -83,13 +83,13 @@ export const img_crop = async (req: Request, res: Response) => {
     const left: any = req.query.left;
     const top: any = req.query.top;
     const width: any = req.query.width;
-    const hight: any = req.query.hight;
+    const height: any = req.query.height;
 
     const cropOptions = {
       left: parseInt(left), // X coordinate (horizontal offset)
       top: parseInt(top), // Y coordinate (vertical offset)
       width: parseInt(width), // Width of the crop area
-      height: parseInt(hight), // Height of the crop area
+      height: parseInt(height), // Height of the crop area
     };
 
     await sharp(req.file.path).extract(cropOptions).toFile(outputPath);

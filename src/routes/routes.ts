@@ -10,13 +10,13 @@ router.post(
 );
 
 router.post(
-  "/img-resize", //?:hight&:width
+  "/img-resize", //?:height&:width
   files_middleware.single("filename"),
   controller.img_resize
 );
 
 router.post(
-  "/img-crop", //?:hight&:width&:top$:left
+  "/img-crop", //?:height&:width&:top$:left
   files_middleware.single("filename"),
   controller.img_crop
 );

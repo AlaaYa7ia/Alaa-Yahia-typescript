@@ -117,7 +117,7 @@ describe("POST /img-resize", () => {
     const options = {
       hostname: "localhost",
       port: port,
-      path: "/img-resize?width=100&hight=100",
+      path: "/img-resize?width=100&height=100",
       method: "POST",
       headers: form.getHeaders(),
     };
@@ -133,7 +133,7 @@ describe("POST /img-resize", () => {
     const options = {
       hostname: "localhost",
       port: port,
-      path: "/img-resize?width=100&hight=100",
+      path: "/img-resize?width=100&height=100",
       method: "POST",
     };
 
@@ -170,7 +170,7 @@ describe("POST /img-crop", () => {
     const options = {
       hostname: "localhost",
       port: port,
-      path: "/img-crop/?left=10&top=10&width=100&hight=100",
+      path: "/img-crop/?left=10&top=10&width=100&height=100",
       method: "POST",
     };
 
@@ -185,7 +185,7 @@ describe("POST /img-crop", () => {
     const options = {
       hostname: "localhost",
       port: port,
-      path: "/img-crop?width=100&hight=100&top=10&left=10",
+      path: "/img-crop?width=100&height=100&top=10&left=10",
       method: "POST",
     };
 
