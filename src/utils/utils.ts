@@ -1,3 +1,3 @@
 //what is the use of this?????
 
-//fix the read.me
+// go over all the notes
