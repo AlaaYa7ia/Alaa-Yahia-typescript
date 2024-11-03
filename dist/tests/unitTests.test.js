@@ -19,6 +19,7 @@ const node_test_1 = require("node:test");
 const path_1 = __importDefault(require("path"));
 const form_data_1 = __importDefault(require("form-data"));
 const fs_1 = __importDefault(require("fs"));
+const port = 8000;
 function makeMultipartRequest(options, formData) {
     return new Promise((resolve, reject) => {
         const req = http_1.default.request(options, (res) => {
@@ -38,7 +39,7 @@ function makeMultipartRequest(options, formData) {
 (0, node_test_1.describe)("Image Processing API (using form-data for uploads)", () => {
     let server;
     (0, node_test_1.before)((done) => {
-        server = server_1.app.listen(3000, done);
+        server = server_1.app.listen(port, done);
     });
     (0, node_test_1.after)((done) => {
         server.close(done);
@@ -50,7 +51,7 @@ function makeMultipartRequest(options, formData) {
             form.append("filename", fs_1.default.createReadStream(path_1.default.resolve(__dirname, "test.jpg")));
             const options = {
                 hostname: "localhost",
-                port: 3000,
+                port: port,
                 path: "/img-upload",
                 method: "POST",
                 headers: form.getHeaders(),
@@ -65,7 +66,7 @@ function makeMultipartRequest(options, formData) {
         //   const form = new FormData();
         //   const options = {
         //     hostname: "localhost",
-        //     port: 3000,
+        //     port: port,
         //     path: "/img-upload",
         //     method: "POST",
         //     headers: form.getHeaders(),
@@ -82,7 +83,7 @@ function makeMultipartRequest(options, formData) {
             form.append("filename", fs_1.default.createReadStream(path_1.default.resolve(__dirname, "test.jpg")));
             const options = {
                 hostname: "localhost",
-                port: 3000,
+                port: port,
                 path: "/img-resize?width=100&hight=100",
                 method: "POST",
                 headers: form.getHeaders(),
@@ -95,7 +96,7 @@ function makeMultipartRequest(options, formData) {
         (0, node_test_1.it)("should return error if no file uploaded", () => __awaiter(void 0, void 0, void 0, function* () {
             const options = {
                 hostname: "localhost",
-                port: 3000,
+                port: port,
                 path: "/img-resize?width=100&hight=100",
                 method: "POST",
             };

@@ -25,7 +25,7 @@ app.get("/", (req: Request, res: Response) => {
     `);
 });
 
-export function start() {
+function start() {
   server = app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
   });
@@ -33,6 +33,7 @@ export function start() {
 }
 
 export function stop() {
+  //TODO: temporary fix I will get red of it when I find a good solution.
   server.close();
 }
 

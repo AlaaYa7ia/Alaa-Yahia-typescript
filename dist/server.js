@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.app = void 0;
-exports.start = start;
 exports.stop = stop;
 const express_1 = __importDefault(require("express"));
 const path = require("path");
@@ -33,6 +32,7 @@ function start() {
     return server;
 }
 function stop() {
+    //TODO: temporary fix I will get red of it when I find a good solution.
     server.close();
 }
 start();

@@ -6,6 +6,8 @@ import path from "path";
 import FormData from "form-data";
 import fs from "fs";
 
+const port: number = 8000;
+
 function makeMultipartRequest(
   options: http.RequestOptions,
   formData: FormData
@@ -34,7 +36,7 @@ describe("Image Processing API (using form-data for uploads)", () => {
   let server: http.Server;
 
   before((done: any) => {
-    server = app.listen(3000, done);
+    server = app.listen(port, done);
   });
 
   after((done: any) => {
@@ -52,7 +54,7 @@ describe("Image Processing API (using form-data for uploads)", () => {
 
       const options = {
         hostname: "localhost",
-        port: 3000,
+        port: port,
         path: "/img-upload",
         method: "POST",
         headers: form.getHeaders(),
@@ -71,7 +73,7 @@ describe("Image Processing API (using form-data for uploads)", () => {
 
     //   const options = {
     //     hostname: "localhost",
-    //     port: 3000,
+    //     port: port,
     //     path: "/img-upload",
     //     method: "POST",
     //     headers: form.getHeaders(),
@@ -95,7 +97,7 @@ describe("Image Processing API (using form-data for uploads)", () => {
 
       const options = {
         hostname: "localhost",
-        port: 3000,
+        port: port,
         path: "/img-resize?width=100&hight=100",
         method: "POST",
         headers: form.getHeaders(),
@@ -111,7 +113,7 @@ describe("Image Processing API (using form-data for uploads)", () => {
     it("should return error if no file uploaded", async () => {
       const options = {
         hostname: "localhost",
-        port: 3000,
+        port: port,
         path: "/img-resize?width=100&hight=100",
         method: "POST",
       };
