@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.img_filter = exports.img_download = exports.img_crop = exports.img_resize = exports.img_upload = void 0;
 const sharp = require("sharp");
 const path = require("path");
 const img_upload = (req, res) => {
@@ -25,6 +26,7 @@ const img_upload = (req, res) => {
         });
     }
 };
+exports.img_upload = img_upload;
 const img_resize = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (!req.file) {
@@ -52,6 +54,7 @@ const img_resize = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             .send({ status: "error", message: "Failed to process image." });
     }
 });
+exports.img_resize = img_resize;
 const img_crop = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (!req.file) {
@@ -85,6 +88,7 @@ const img_crop = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             .send({ status: "error", message: "Failed to process image." });
     }
 });
+exports.img_crop = img_crop;
 const img_download = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (!req.file) {
@@ -110,6 +114,7 @@ const img_download = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
 });
+exports.img_download = img_download;
 const img_filter = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (!req.file) {
@@ -130,8 +135,9 @@ const img_filter = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             image = image.blur(5);
         }
         else if (filter == "watermark") {
+            const metadata = yield image.metadata();
             const watermarkImage = yield sharp(watermarkPath)
-                .resize({ width: 100 }) // Resize watermark to desired size
+                .resize({ width: metadata.width, height: metadata.height }) // Resize watermark to desired size
                 .toBuffer();
             // Composite watermark onto the main image
             image = image.composite([
@@ -162,10 +168,11 @@ const img_filter = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             .send({ status: "error", message: "Failed to process image." });
     }
 });
+exports.img_filter = img_filter;
 module.exports = {
-    img_upload,
-    img_resize,
-    img_crop,
-    img_download,
-    img_filter,
+    img_upload: exports.img_upload,
+    img_resize: exports.img_resize,
+    img_crop: exports.img_crop,
+    img_download: exports.img_download,
+    img_filter: exports.img_filter,
 };

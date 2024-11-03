@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 const path = require("path");
 
-const app = express();
+export const app = express();
 const routes = require("./routes/routes");
 
 app.set("view engine", "ejs");

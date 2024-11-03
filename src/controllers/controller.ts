@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-const img_upload = (req: Request, res: Response) => {
+export const img_upload = (req: Request, res: Response) => {
   try {
     res.send({
       status: "success",
@@ -28,7 +28,7 @@ const img_upload = (req: Request, res: Response) => {
   }
 };
 
-const img_resize = async (req: Request, res: Response) => {
+export const img_resize = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
       return res
@@ -62,7 +62,7 @@ const img_resize = async (req: Request, res: Response) => {
   }
 };
 
-const img_crop = async (req: Request, res: Response) => {
+export const img_crop = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
       return res
@@ -103,7 +103,7 @@ const img_crop = async (req: Request, res: Response) => {
   }
 };
 
-const img_download = async (req: Request, res: Response) => {
+export const img_download = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
       return res
@@ -134,7 +134,7 @@ const img_download = async (req: Request, res: Response) => {
   }
 };
 
-const img_filter = async (req: Request, res: Response) => {
+export const img_filter = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
       return res
