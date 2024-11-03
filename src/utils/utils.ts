@@ -8,3 +8,5 @@
 //deal with file allredy exists
 
 //check if you need all the things you have installed
+
+//fix the read.me

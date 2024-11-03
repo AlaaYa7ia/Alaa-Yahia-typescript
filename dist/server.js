@@ -4,6 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.app = void 0;
+exports.start = start;
+exports.stop = stop;
 const express_1 = __importDefault(require("express"));
 const path = require("path");
 exports.app = (0, express_1.default)();
@@ -12,6 +14,7 @@ exports.app.set("view engine", "ejs");
 exports.app.use("/uploads", express_1.default.static(path.join(__dirname, "uploads"))); //se if it works to change it to "public" folder
 exports.app.use(routes);
 const port = 3000;
+let server;
 exports.app.get("/", (req, res) => {
     res.send(`Welcome to Image Processing API
     Actions Available:
@@ -23,6 +26,13 @@ exports.app.get("/", (req, res) => {
 
     `);
 });
-exports.app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+function start() {
+    server = exports.app.listen(port, () => {
+        console.log(`Server is running on http://localhost:${port}`);
+    });
+    return server;
+}
+function stop() {
+    server.close();
+}
+start();

@@ -11,6 +11,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads"))); //se if it
 app.use(routes);
 
 const port: number = 3000;
+let server: any;
 
 app.get("/", (req: Request, res: Response) => {
   res.send(`Welcome to Image Processing API
@@ -24,6 +25,15 @@ app.get("/", (req: Request, res: Response) => {
     `);
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+export function start() {
+  server = app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
+  return server;
+}
+
+export function stop() {
+  server.close();
+}
+
+start();

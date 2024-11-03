@@ -1,8 +1,7 @@
 import { strict as assert } from "assert";
 import http from "http";
-import { app } from "../server";
+import { app, stop } from "../server";
 import { describe, before, after, it } from "node:test";
-import { Request, Response } from "express";
 import path from "path";
 import FormData from "form-data";
 import fs from "fs";
@@ -35,11 +34,12 @@ describe("Image Processing API (using form-data for uploads)", () => {
   let server: http.Server;
 
   before((done: any) => {
-    server = app.listen(8000, done);
+    server = app.listen(3000, done);
   });
 
   after((done: any) => {
     server.close(done);
+    stop();
   });
 
   describe("POST /img-upload", () => {
@@ -52,7 +52,7 @@ describe("Image Processing API (using form-data for uploads)", () => {
 
       const options = {
         hostname: "localhost",
-        port: 8000,
+        port: 3000,
         path: "/img-upload",
         method: "POST",
         headers: form.getHeaders(),
@@ -71,7 +71,7 @@ describe("Image Processing API (using form-data for uploads)", () => {
 
     //   const options = {
     //     hostname: "localhost",
-    //     port: 8000,
+    //     port: 3000,
     //     path: "/img-upload",
     //     method: "POST",
     //     headers: form.getHeaders(),
@@ -95,7 +95,7 @@ describe("Image Processing API (using form-data for uploads)", () => {
 
       const options = {
         hostname: "localhost",
-        port: 8000,
+        port: 3000,
         path: "/img-resize?width=100&hight=100",
         method: "POST",
         headers: form.getHeaders(),
@@ -111,7 +111,7 @@ describe("Image Processing API (using form-data for uploads)", () => {
     it("should return error if no file uploaded", async () => {
       const options = {
         hostname: "localhost",
-        port: 8000,
+        port: 3000,
         path: "/img-resize?width=100&hight=100",
         method: "POST",
       };
