@@ -1,38 +1,69 @@
 import { strict as assert } from "assert";
 import http from "http";
 import { app, stop } from "../server";
-import { describe, before, after, it } from "node:test";
+import { describe, before, after, it, afterEach } from "node:test";
 import path from "path";
 import FormData from "form-data";
 import fs from "fs";
 
 const port: number = 8000;
 
-function makeMultipartRequest(
+async function makeMultipartRequest(
   options: http.RequestOptions,
   formData: FormData
-): Promise<any> {
+): Promise<{ statusCode: number; body: any }> {
   return new Promise((resolve, reject) => {
     const req = http.request(options, (res) => {
       let data = "";
 
+      // Collect data chunks
       res.on("data", (chunk) => {
         data += chunk;
       });
 
+      // Handle end of response
       res.on("end", () => {
-        (res as any).body = JSON.parse(data);
-        resolve(res);
+        try {
+          const parsedBody = JSON.parse(data);
+          resolve({ statusCode: res.statusCode || 500, body: parsedBody });
+        } catch (err) {
+          reject(new Error("Failed to parse JSON response"));
+        }
       });
     });
 
-    req.on("error", (e) => reject(e));
+    // Handle request errors
+    req.on("error", reject);
 
+    // Set a timeout to prevent the request from hanging indefinitely
+    req.setTimeout(10000, () => {
+      req.destroy(new Error("Request timed out"));
+    });
+
+    // Pipe the formData to the request
     formData.pipe(req);
   });
 }
 
-describe("Image Processing API (using form-data for uploads)", () => {
+// describe("Image Processing API", () => {
+// let server: http.Server;
+
+// before((done: any) => {
+//   server = app.listen(port, done);
+// });
+
+// after((done: any) => {
+//   server.close(done);
+//   stop();
+// });
+
+// afterEach(() => {
+//   setTimeout(() => {}, 5000);
+// });
+
+//finally??
+
+describe("POST /img-upload", () => {
   let server: http.Server;
 
   before((done: any) => {
@@ -44,90 +75,253 @@ describe("Image Processing API (using form-data for uploads)", () => {
     stop();
   });
 
-  describe("POST /img-upload", () => {
-    it("should upload an image successfully", async () => {
-      const form = new FormData();
-      form.append(
-        "filename",
-        fs.createReadStream(path.resolve(__dirname, "test.jpg"))
-      );
+  it("should upload an image successfully", async () => {
+    const form = new FormData();
+    form.append(
+      "filename",
+      fs.createReadStream(path.resolve(__dirname, "test.jpg"))
+    );
 
-      const options = {
-        hostname: "localhost",
-        port: port,
-        path: "/img-upload",
-        method: "POST",
-        headers: form.getHeaders(),
-      };
+    const options = {
+      hostname: "localhost",
+      port: port,
+      path: "/img-upload",
+      method: "POST",
+      headers: form.getHeaders(),
+    };
 
-      const res = await makeMultipartRequest(options, form);
+    const res = await makeMultipartRequest(options, form);
 
-      assert.equal(res.statusCode, 200);
-      assert.equal(res.body.status, "success");
-      assert.equal(res.body.message, "File uploaded successfully!");
-    });
-
-    //should fix my code
-    // it("should handle upload errors", async () => {
-    //   const form = new FormData();
-
-    //   const options = {
-    //     hostname: "localhost",
-    //     port: port,
-    //     path: "/img-upload",
-    //     method: "POST",
-    //     headers: form.getHeaders(),
-    //   };
-
-    //   const res = await makeMultipartRequest(options, form);
-
-    //   assert.equal(res.statusCode, 400);
-    //   assert.equal(res.body.status, "error");
-    //   assert.equal(res.body.message, "Failed to upload file.");
-    // });
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body.status, "success");
+    assert.equal(res.body.message, "File uploaded successfully!");
   });
 
-  describe("POST /img-resize", () => {
-    it("should resize image successfully", async () => {
-      const form = new FormData();
-      form.append(
-        "filename",
-        fs.createReadStream(path.resolve(__dirname, "test.jpg"))
-      );
+  //should fix my code
+  // it("should handle upload errors", async () => {
+  //   const form = new FormData();
 
-      const options = {
-        hostname: "localhost",
-        port: port,
-        path: "/img-resize?width=100&hight=100",
-        method: "POST",
-        headers: form.getHeaders(),
-      };
+  //   const options = {
+  //     hostname: "localhost",
+  //     port: port,
+  //     path: "/img-upload",
+  //     method: "POST",
+  //     headers: form.getHeaders(),
+  //   };
 
-      const res = await makeMultipartRequest(options, form);
+  //   const res = await makeMultipartRequest(options, form);
 
-      assert.equal(res.statusCode, 200);
-      assert.equal(res.body.status, "success");
-      assert.ok(res.body.filename.includes("resized"));
-    });
-
-    it("should return error if no file uploaded", async () => {
-      const options = {
-        hostname: "localhost",
-        port: port,
-        path: "/img-resize?width=100&hight=100",
-        method: "POST",
-      };
-
-      // Empty form without a file
-      const form = new FormData();
-
-      const res = await makeMultipartRequest(options, form);
-
-      assert.equal(res.statusCode, 400);
-      assert.equal(res.body.status, "error");
-      assert.equal(res.body.message, "No file uploaded.");
-    });
-  });
-
-  // add other test cases for img-crop, img-download, img-filter...
+  //   assert.equal(res.statusCode, 400);
+  //   assert.equal(res.body.status, "error");
+  //   assert.equal(res.body.message, "Failed to upload file.");
+  // });
 });
+
+describe("POST /img-resize", () => {
+  let server: http.Server;
+
+  before((done: any) => {
+    server = app.listen(port, done);
+  });
+
+  after((done: any) => {
+    server.close(done);
+    stop();
+  });
+
+  it("should resize image successfully", async () => {
+    const form = new FormData();
+    form.append(
+      "filename",
+      fs.createReadStream(path.resolve(__dirname, "test.jpg"))
+    );
+
+    const options = {
+      hostname: "localhost",
+      port: port,
+      path: "/img-resize?width=100&hight=100",
+      method: "POST",
+      headers: form.getHeaders(),
+    };
+
+    const res = await makeMultipartRequest(options, form);
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body.status, "success");
+    assert.ok(res.body.filename.includes("resized"));
+  });
+
+  it("should return error if no file uploaded", async () => {
+    const options = {
+      hostname: "localhost",
+      port: port,
+      path: "/img-resize?width=100&hight=100",
+      method: "POST",
+    };
+
+    // Empty form without a file
+    const form = new FormData();
+
+    const res = await makeMultipartRequest(options, form);
+
+    assert.equal(res.statusCode, 400);
+    assert.equal(res.body.status, "error");
+    assert.equal(res.body.message, "No file uploaded.");
+  });
+});
+
+describe("POST /img-crop", () => {
+  let server: http.Server;
+
+  before((done: any) => {
+    server = app.listen(port, done);
+  });
+
+  after((done: any) => {
+    server.close(done);
+    stop();
+  });
+
+  it("should crop the image successfully", async () => {
+    const form = new FormData();
+    form.append(
+      "filename",
+      fs.createReadStream(path.resolve(__dirname, "test.jpg"))
+    );
+
+    const options = {
+      hostname: "localhost",
+      port: port,
+      path: "/img-crop/?left=10&top=10&width=100&hight=100",
+      method: "POST",
+    };
+
+    const res = await makeMultipartRequest(options, form);
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body.status, "success");
+    assert.ok(res.body.filename.includes("cropped"));
+  });
+
+  it("should return error if no file uploaded for cropping", async () => {
+    const options = {
+      hostname: "localhost",
+      port: port,
+      path: "/img-crop?width=100&hight=100&top=10&left=10",
+      method: "POST",
+    };
+
+    const form = new FormData();
+
+    const res = await makeMultipartRequest(options, form);
+
+    assert.equal(res.statusCode, 400);
+    assert.equal(res.body.status, "error");
+    assert.equal(res.body.message, "No file uploaded.");
+  });
+});
+
+describe("POST /img-download", () => {
+  let server: http.Server;
+
+  before((done: any) => {
+    server = app.listen(port, done);
+  });
+
+  after((done: any) => {
+    server.close(done);
+    stop();
+  });
+
+  it("should return error if no file uploaded for download", async () => {
+    const options = {
+      hostname: "localhost",
+      port: port,
+      path: "/img-downlaod",
+      method: "POST",
+    };
+
+    const form = new FormData();
+
+    const res = await makeMultipartRequest(options, form);
+
+    assert.equal(res.statusCode, 400);
+    assert.equal(res.body.status, "error");
+    assert.equal(res.body.message, "No file uploaded.");
+  });
+});
+
+describe("POST /img-filter", () => {
+  let server: http.Server;
+
+  before((done: any) => {
+    server = app.listen(port, done);
+  });
+
+  after((done: any) => {
+    server.close(done);
+    stop();
+  });
+
+  it("should apply grayscale filter to the image", async () => {
+    const form = new FormData();
+    form.append(
+      "filename",
+      fs.createReadStream(path.resolve(__dirname, "test.jpg"))
+    );
+
+    const options = {
+      hostname: "localhost",
+      port: port,
+      path: "/img-filter?filter=grayscale",
+      method: "POST",
+      headers: form.getHeaders(),
+    };
+
+    const res = await makeMultipartRequest(options, form);
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body.status, "success");
+    assert.ok(res.body.filename.includes("grayscale"));
+  });
+
+  it("should apply blur filter to the image", async () => {
+    const form = new FormData();
+    form.append(
+      "filename",
+      fs.createReadStream(path.resolve(__dirname, "test.jpg"))
+    );
+
+    const options = {
+      hostname: "localhost",
+      port: port,
+      path: "/img-filter?filter=blur",
+      method: "POST",
+      headers: form.getHeaders(),
+    };
+
+    const res = await makeMultipartRequest(options, form);
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body.status, "success");
+    assert.ok(res.body.filename.includes("blur"));
+  });
+
+  it("should return error if no file uploaded for filtering", async () => {
+    const options = {
+      hostname: "localhost",
+      port: port,
+      path: "/img-filter?filter=grayscale",
+      method: "POST",
+    };
+
+    const form = new FormData();
+
+    const res = await makeMultipartRequest(options, form);
+
+    assert.equal(res.statusCode, 400);
+    assert.equal(res.body.status, "error");
+    assert.equal(res.body.message, "No file uploaded.");
+  });
+});
+// });

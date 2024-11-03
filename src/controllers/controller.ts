@@ -129,7 +129,7 @@ export const img_download = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).send({
       status: "error",
-      message: "Failed to process image for download.",
+      message: "Failed to download image.",
     });
   }
 };
@@ -158,22 +158,21 @@ export const img_filter = async (req: Request, res: Response) => {
     await sharp(req.file.path);
 
     if (filter === "grayscale") {
-      //make it case -swich
+      // TODO: make it case -swich
       image = image.grayscale();
     } else if (filter === "blur") {
       image = image.blur(5);
     } else if (filter == "watermark") {
       const metadata = await image.metadata();
       const watermarkImage = await sharp(watermarkPath)
-        .resize({ width: metadata.width, height: metadata.height }) // Resize watermark to desired size
+        .resize({ width: metadata.width, height: metadata.height })
         .toBuffer();
 
-      // Composite watermark onto the main image
       image = image.composite([
         {
           input: watermarkImage,
-          gravity: "southeast", // Position watermark at the bottom-right corner
-          blend: "overlay", // Apply overlay blend mode
+          gravity: "southeast",
+          blend: "overlay",
         },
       ]);
     } else {
