@@ -10,7 +10,8 @@ const path = require("path");
 exports.app = (0, express_1.default)();
 const routes = require("./routes/routes");
 exports.app.set("view engine", "ejs");
-exports.app.use("/uploads", express_1.default.static(path.join(__dirname, "uploads"))); //se if it works to change it to "public" folder
+exports.app.use("/uploads", express_1.default.static(path.join(__dirname, "uploads"))); //TODO: see  if it works to change it to "public" folder
+// ASK: should I have the uploads in public folder?
 const port = 3000;
 let server;
 exports.app.get("/", (req, res) => {

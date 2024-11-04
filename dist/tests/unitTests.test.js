@@ -21,6 +21,8 @@ const form_data_1 = __importDefault(require("form-data"));
 const fs_1 = __importDefault(require("fs"));
 //TODO: split into files.
 const port = 8000;
+const fileName = path_1.default.resolve(__dirname, "test.jpg");
+const pathToUploads = "../../uploads";
 function makeMultipartRequest(options, formData) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
@@ -48,18 +50,34 @@ function makeMultipartRequest(options, formData) {
         });
     });
 }
+function deleteFile(fileName) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (fs_1.default.existsSync(fileName)) {
+                fs_1.default.unlinkSync(fileName);
+                console.log(`Deleted ${fileName}`);
+            }
+        }
+        catch (error) {
+            console.error(`Got an error trying to delete the file: ${error.message}`);
+        }
+    });
+}
 (0, node_test_1.describe)("POST /img-upload", () => {
     let server;
-    (0, node_test_1.before)((done) => {
+    (0, node_test_1.before)((done) => __awaiter(void 0, void 0, void 0, function* () {
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
+        setTimeout(() => 5000);
         server = server_1.app.listen(port, done);
-    });
-    (0, node_test_1.after)((done) => {
+    }));
+    (0, node_test_1.after)((done) => __awaiter(void 0, void 0, void 0, function* () {
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server.close(done);
         (0, server_1.stop)();
-    });
+    }));
     (0, node_test_1.it)("should upload an image successfully", () => __awaiter(void 0, void 0, void 0, function* () {
         const form = new form_data_1.default();
-        form.append("filename", fs_1.default.createReadStream(path_1.default.resolve(__dirname, "test.jpg")));
+        form.append("filename", fs_1.default.createReadStream(fileName));
         const options = {
             hostname: "localhost",
             port: port,
@@ -88,16 +106,18 @@ function makeMultipartRequest(options, formData) {
 });
 (0, node_test_1.describe)("POST /img-resize", () => {
     let server;
-    (0, node_test_1.before)((done) => {
+    (0, node_test_1.before)((done) => __awaiter(void 0, void 0, void 0, function* () {
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server = server_1.app.listen(port, done);
-    });
-    (0, node_test_1.after)((done) => {
+    }));
+    (0, node_test_1.after)((done) => __awaiter(void 0, void 0, void 0, function* () {
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server.close(done);
         (0, server_1.stop)();
-    });
+    }));
     (0, node_test_1.it)("should resize image successfully", () => __awaiter(void 0, void 0, void 0, function* () {
         const form = new form_data_1.default();
-        form.append("filename", fs_1.default.createReadStream(path_1.default.resolve(__dirname, "test.jpg")));
+        form.append("filename", fs_1.default.createReadStream(fileName));
         const options = {
             hostname: "localhost",
             port: port,
@@ -127,16 +147,18 @@ function makeMultipartRequest(options, formData) {
 });
 (0, node_test_1.describe)("POST /img-crop", () => {
     let server;
-    (0, node_test_1.before)((done) => {
+    (0, node_test_1.before)((done) => __awaiter(void 0, void 0, void 0, function* () {
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server = server_1.app.listen(port, done);
-    });
-    (0, node_test_1.after)((done) => {
+    }));
+    (0, node_test_1.after)((done) => __awaiter(void 0, void 0, void 0, function* () {
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server.close(done);
         (0, server_1.stop)();
-    });
+    }));
     (0, node_test_1.it)("should crop the image successfully", () => __awaiter(void 0, void 0, void 0, function* () {
         const form = new form_data_1.default();
-        form.append("filename", fs_1.default.createReadStream(path_1.default.resolve(__dirname, "test.jpg")));
+        form.append("filename", fs_1.default.createReadStream(fileName));
         const options = {
             hostname: "localhost",
             port: port,
@@ -164,13 +186,15 @@ function makeMultipartRequest(options, formData) {
 });
 (0, node_test_1.describe)("POST /img-download", () => {
     let server;
-    (0, node_test_1.before)((done) => {
+    (0, node_test_1.before)((done) => __awaiter(void 0, void 0, void 0, function* () {
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server = server_1.app.listen(port, done);
-    });
-    (0, node_test_1.after)((done) => {
+    }));
+    (0, node_test_1.after)((done) => __awaiter(void 0, void 0, void 0, function* () {
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server.close(done);
         (0, server_1.stop)();
-    });
+    }));
     (0, node_test_1.it)("should return error if no file uploaded for download", () => __awaiter(void 0, void 0, void 0, function* () {
         const options = {
             hostname: "localhost",
@@ -187,16 +211,18 @@ function makeMultipartRequest(options, formData) {
 });
 (0, node_test_1.describe)("POST /img-filter", () => {
     let server;
-    (0, node_test_1.before)((done) => {
+    (0, node_test_1.before)((done) => __awaiter(void 0, void 0, void 0, function* () {
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server = server_1.app.listen(port, done);
-    });
-    (0, node_test_1.after)((done) => {
+    }));
+    (0, node_test_1.after)((done) => __awaiter(void 0, void 0, void 0, function* () {
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server.close(done);
         (0, server_1.stop)();
-    });
+    }));
     (0, node_test_1.it)("should apply grayscale filter to the image", () => __awaiter(void 0, void 0, void 0, function* () {
         const form = new form_data_1.default();
-        form.append("filename", fs_1.default.createReadStream(path_1.default.resolve(__dirname, "test.jpg")));
+        form.append("filename", fs_1.default.createReadStream(fileName));
         const options = {
             hostname: "localhost",
             port: port,
@@ -208,10 +234,12 @@ function makeMultipartRequest(options, formData) {
         assert_1.strict.equal(res.statusCode, 200);
         assert_1.strict.equal(res.body.status, "success");
         assert_1.strict.ok(res.body.filename.includes("grayscale"));
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
     }));
     (0, node_test_1.it)("should apply blur filter to the image", () => __awaiter(void 0, void 0, void 0, function* () {
+        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         const form = new form_data_1.default();
-        form.append("filename", fs_1.default.createReadStream(path_1.default.resolve(__dirname, "test.jpg")));
+        form.append("filename", fs_1.default.createReadStream(fileName));
         const options = {
             hostname: "localhost",
             port: port,
@@ -238,4 +266,3 @@ function makeMultipartRequest(options, formData) {
         assert_1.strict.equal(res.body.message, "No file uploaded.");
     }));
 });
-// });

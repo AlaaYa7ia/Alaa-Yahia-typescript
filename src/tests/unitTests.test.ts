@@ -10,6 +10,9 @@ import fs from "fs";
 
 const port: number = 8000;
 
+const fileName: string = path.resolve(__dirname, "test.jpg");
+const pathToUploads = "../../uploads";
+
 async function makeMultipartRequest(
   options: http.RequestOptions,
   formData: FormData
@@ -43,24 +46,38 @@ async function makeMultipartRequest(
   });
 }
 
+async function deleteFile(fileName: any) {
+  try {
+    if (fs.existsSync(fileName)) {
+      fs.unlinkSync(fileName);
+      console.log(`Deleted ${fileName}`);
+    }
+  } catch (error: any) {
+    console.error(`Got an error trying to delete the file: ${error.message}`);
+  }
+}
+
 describe("POST /img-upload", () => {
   let server: http.Server;
 
-  before((done: any) => {
+  before(async (done: any) => {
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+
+    setTimeout(() => 5000);
+
     server = app.listen(port, done);
   });
 
-  after((done: any) => {
+  after(async (done: any) => {
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+
     server.close(done);
     stop();
   });
 
   it("should upload an image successfully", async () => {
     const form = new FormData();
-    form.append(
-      "filename",
-      fs.createReadStream(path.resolve(__dirname, "test.jpg"))
-    );
+    form.append("filename", fs.createReadStream(fileName));
 
     const options = {
       hostname: "localhost",
@@ -98,21 +115,22 @@ describe("POST /img-upload", () => {
 describe("POST /img-resize", () => {
   let server: http.Server;
 
-  before((done: any) => {
+  before(async (done: any) => {
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+
     server = app.listen(port, done);
   });
 
-  after((done: any) => {
+  after(async (done: any) => {
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+
     server.close(done);
     stop();
   });
 
   it("should resize image successfully", async () => {
     const form = new FormData();
-    form.append(
-      "filename",
-      fs.createReadStream(path.resolve(__dirname, "test.jpg"))
-    );
+    form.append("filename", fs.createReadStream(fileName));
 
     const options = {
       hostname: "localhost",
@@ -151,21 +169,22 @@ describe("POST /img-resize", () => {
 describe("POST /img-crop", () => {
   let server: http.Server;
 
-  before((done: any) => {
+  before(async (done: any) => {
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+
     server = app.listen(port, done);
   });
 
-  after((done: any) => {
+  after(async (done: any) => {
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+
     server.close(done);
     stop();
   });
 
   it("should crop the image successfully", async () => {
     const form = new FormData();
-    form.append(
-      "filename",
-      fs.createReadStream(path.resolve(__dirname, "test.jpg"))
-    );
+    form.append("filename", fs.createReadStream(fileName));
 
     const options = {
       hostname: "localhost",
@@ -202,11 +221,15 @@ describe("POST /img-crop", () => {
 describe("POST /img-download", () => {
   let server: http.Server;
 
-  before((done: any) => {
+  before(async (done: any) => {
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+
     server = app.listen(port, done);
   });
 
-  after((done: any) => {
+  after(async (done: any) => {
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+
     server.close(done);
     stop();
   });
@@ -232,21 +255,22 @@ describe("POST /img-download", () => {
 describe("POST /img-filter", () => {
   let server: http.Server;
 
-  before((done: any) => {
+  before(async (done: any) => {
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+
     server = app.listen(port, done);
   });
 
-  after((done: any) => {
+  after(async (done: any) => {
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+
     server.close(done);
     stop();
   });
 
   it("should apply grayscale filter to the image", async () => {
     const form = new FormData();
-    form.append(
-      "filename",
-      fs.createReadStream(path.resolve(__dirname, "test.jpg"))
-    );
+    form.append("filename", fs.createReadStream(fileName));
 
     const options = {
       hostname: "localhost",
@@ -261,14 +285,15 @@ describe("POST /img-filter", () => {
     assert.equal(res.statusCode, 200);
     assert.equal(res.body.status, "success");
     assert.ok(res.body.filename.includes("grayscale"));
+
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
   });
 
   it("should apply blur filter to the image", async () => {
+    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+
     const form = new FormData();
-    form.append(
-      "filename",
-      fs.createReadStream(path.resolve(__dirname, "test.jpg"))
-    );
+    form.append("filename", fs.createReadStream(fileName));
 
     const options = {
       hostname: "localhost",
@@ -302,4 +327,3 @@ describe("POST /img-filter", () => {
     assert.equal(res.body.message, "No file uploaded.");
   });
 });
-// });
