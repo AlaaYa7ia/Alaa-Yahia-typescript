@@ -22,7 +22,7 @@ router.post(
 );
 
 router.post(
-  "/img-downlaod", //?:type&:name
+  "/img-downlaod",
   files_middleware.single("filename"),
   controller.img_download
 );
