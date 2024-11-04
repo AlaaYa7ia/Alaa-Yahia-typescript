@@ -68,9 +68,7 @@ describe("POST /img-upload", () => {
     server = app.listen(port, done);
   });
 
-  after(async (done: any) => {
-    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
-
+  after((done: any) => {
     server.close(done);
     stop();
   });
@@ -121,9 +119,7 @@ describe("POST /img-resize", () => {
     server = app.listen(port, done);
   });
 
-  after(async (done: any) => {
-    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
-
+  after((done: any) => {
     server.close(done);
     stop();
   });
@@ -175,9 +171,7 @@ describe("POST /img-crop", () => {
     server = app.listen(port, done);
   });
 
-  after(async (done: any) => {
-    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
-
+  after((done: any) => {
     server.close(done);
     stop();
   });
@@ -227,9 +221,7 @@ describe("POST /img-download", () => {
     server = app.listen(port, done);
   });
 
-  after(async (done: any) => {
-    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
-
+  after((done: any) => {
     server.close(done);
     stop();
   });
@@ -261,9 +253,7 @@ describe("POST /img-filter", () => {
     server = app.listen(port, done);
   });
 
-  after(async (done: any) => {
-    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
-
+  after((done: any) => {
     server.close(done);
     stop();
   });
@@ -285,8 +275,6 @@ describe("POST /img-filter", () => {
     assert.equal(res.statusCode, 200);
     assert.equal(res.body.status, "success");
     assert.ok(res.body.filename.includes("grayscale"));
-
-    await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
   });
 
   it("should apply blur filter to the image", async () => {
