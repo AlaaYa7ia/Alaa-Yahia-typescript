@@ -70,11 +70,10 @@ function deleteFile(fileName) {
         setTimeout(() => 5000);
         server = server_1.app.listen(port, done);
     }));
-    (0, node_test_1.after)((done) => __awaiter(void 0, void 0, void 0, function* () {
-        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
+    (0, node_test_1.after)((done) => {
         server.close(done);
         (0, server_1.stop)();
-    }));
+    });
     (0, node_test_1.it)("should upload an image successfully", () => __awaiter(void 0, void 0, void 0, function* () {
         const form = new form_data_1.default();
         form.append("filename", fs_1.default.createReadStream(fileName));
@@ -110,11 +109,10 @@ function deleteFile(fileName) {
         yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server = server_1.app.listen(port, done);
     }));
-    (0, node_test_1.after)((done) => __awaiter(void 0, void 0, void 0, function* () {
-        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
+    (0, node_test_1.after)((done) => {
         server.close(done);
         (0, server_1.stop)();
-    }));
+    });
     (0, node_test_1.it)("should resize image successfully", () => __awaiter(void 0, void 0, void 0, function* () {
         const form = new form_data_1.default();
         form.append("filename", fs_1.default.createReadStream(fileName));
@@ -151,11 +149,10 @@ function deleteFile(fileName) {
         yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server = server_1.app.listen(port, done);
     }));
-    (0, node_test_1.after)((done) => __awaiter(void 0, void 0, void 0, function* () {
-        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
+    (0, node_test_1.after)((done) => {
         server.close(done);
         (0, server_1.stop)();
-    }));
+    });
     (0, node_test_1.it)("should crop the image successfully", () => __awaiter(void 0, void 0, void 0, function* () {
         const form = new form_data_1.default();
         form.append("filename", fs_1.default.createReadStream(fileName));
@@ -190,11 +187,10 @@ function deleteFile(fileName) {
         yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server = server_1.app.listen(port, done);
     }));
-    (0, node_test_1.after)((done) => __awaiter(void 0, void 0, void 0, function* () {
-        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
+    (0, node_test_1.after)((done) => {
         server.close(done);
         (0, server_1.stop)();
-    }));
+    });
     (0, node_test_1.it)("should return error if no file uploaded for download", () => __awaiter(void 0, void 0, void 0, function* () {
         const options = {
             hostname: "localhost",
@@ -215,11 +211,10 @@ function deleteFile(fileName) {
         yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
         server = server_1.app.listen(port, done);
     }));
-    (0, node_test_1.after)((done) => __awaiter(void 0, void 0, void 0, function* () {
-        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
+    (0, node_test_1.after)((done) => {
         server.close(done);
         (0, server_1.stop)();
-    }));
+    });
     (0, node_test_1.it)("should apply grayscale filter to the image", () => __awaiter(void 0, void 0, void 0, function* () {
         const form = new form_data_1.default();
         form.append("filename", fs_1.default.createReadStream(fileName));
@@ -234,7 +229,6 @@ function deleteFile(fileName) {
         assert_1.strict.equal(res.statusCode, 200);
         assert_1.strict.equal(res.body.status, "success");
         assert_1.strict.ok(res.body.filename.includes("grayscale"));
-        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
     }));
     (0, node_test_1.it)("should apply blur filter to the image", () => __awaiter(void 0, void 0, void 0, function* () {
         yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));

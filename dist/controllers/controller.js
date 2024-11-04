@@ -132,30 +132,31 @@ const img_filter = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const watermarkPath = path.join(__dirname, "../../public/assets", "watermark.jpg");
         let image = sharp(req.file.path);
         yield sharp(req.file.path);
-        if (filter === "grayscale") {
-            // TODO: make it case -swich
-            image = image.grayscale();
-        }
-        else if (filter === "blur") {
-            image = image.blur(5);
-        }
-        else if (filter == "watermark") {
-            const metadata = yield image.metadata();
-            const watermarkImage = yield sharp(watermarkPath)
-                .resize({ width: metadata.width, height: metadata.height })
-                .toBuffer();
-            image = image.composite([
-                {
-                    input: watermarkImage,
-                    gravity: "southeast",
-                    blend: "overlay",
-                },
-            ]);
-        }
-        else {
-            return res
-                .status(400)
-                .send({ status: "error", message: "No filter query parameter found." });
+        switch (filter) {
+            case "grayscale":
+                image = image.grayscale();
+                break;
+            case "blur":
+                image = image.blur(5);
+                break;
+            case "watermark":
+                const metadata = yield image.metadata();
+                const watermarkImage = yield sharp(watermarkPath)
+                    .resize({ width: metadata.width, height: metadata.height })
+                    .toBuffer();
+                image = image.composite([
+                    {
+                        input: watermarkImage,
+                        gravity: "southeast",
+                        blend: "overlay",
+                    },
+                ]);
+                break;
+            default:
+                return res.status(400).send({
+                    status: "error",
+                    message: "No filter query parameter found.",
+                });
         }
         yield image.toFile(outputPath);
         res.send({

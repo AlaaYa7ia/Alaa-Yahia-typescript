@@ -1,3 +1,2 @@
 "use strict";
-//what is the use of this?????
-// go over all the notes
+//ASK: what is the use of this?????

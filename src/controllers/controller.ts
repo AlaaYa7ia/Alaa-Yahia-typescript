@@ -162,28 +162,32 @@ export const img_filter = async (req: Request, res: Response) => {
     let image = sharp(req.file.path);
     await sharp(req.file.path);
 
-    if (filter === "grayscale") {
-      // TODO: make it case -swich
-      image = image.grayscale();
-    } else if (filter === "blur") {
-      image = image.blur(5);
-    } else if (filter == "watermark") {
-      const metadata = await image.metadata();
-      const watermarkImage = await sharp(watermarkPath)
-        .resize({ width: metadata.width, height: metadata.height })
-        .toBuffer();
+    switch (filter) {
+      case "grayscale":
+        image = image.grayscale();
+        break;
+      case "blur":
+        image = image.blur(5);
+        break;
+      case "watermark":
+        const metadata = await image.metadata();
+        const watermarkImage = await sharp(watermarkPath)
+          .resize({ width: metadata.width, height: metadata.height })
+          .toBuffer();
 
-      image = image.composite([
-        {
-          input: watermarkImage,
-          gravity: "southeast",
-          blend: "overlay",
-        },
-      ]);
-    } else {
-      return res
-        .status(400)
-        .send({ status: "error", message: "No filter query parameter found." });
+        image = image.composite([
+          {
+            input: watermarkImage,
+            gravity: "southeast",
+            blend: "overlay",
+          },
+        ]);
+        break;
+      default:
+        return res.status(400).send({
+          status: "error",
+          message: "No filter query parameter found.",
+        });
     }
 
     await image.toFile(outputPath);
