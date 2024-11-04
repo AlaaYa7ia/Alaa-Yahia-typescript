@@ -17,4 +17,5 @@ Implementations:
 Unit tests+ CI
 Error Handling
 
-TODO: Deployment + CD
+Deployment + CD
+https://alaa-yahia-typescript.onrender.com/
