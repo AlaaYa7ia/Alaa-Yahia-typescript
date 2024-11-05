@@ -38,6 +38,4 @@ router.post(
   controller.img_filter
 );
 
-//handle if user ask for none existing rout os function
-
 module.exports = router;

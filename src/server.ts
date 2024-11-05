@@ -14,13 +14,13 @@ const port: number = 3000;
 let server: any;
 
 app.get("/", (req: Request, res: Response) => {
-  res.send(`Welcome to Image Processing API
-    Actions Available:
-    POST /img-upload -> uplaod the image in the body.
-    POST /img-resize/?:height&:width -> uplaod the image in the body.
-    POST /img-crop/?:height&:width&:top$:left -> uplaod the image in the body.
-    POST /img-downlaod/
-    POST /img-filter/?:filter -> grayscale or blur -> uplaod the image in the body.
+  res.send(`<h1>Welcome to Image Processing API</h1>
+    <p>Actions Available:</p>
+    <p>POST /img-upload -> uplaod the image in the body.</p>
+    <p>POST /img-resize/ -> uplaod the image, and insert height and width in the body.</p>
+    <p>POST /img-crop/ -> uplaod the image, and insert top, left, height and width in the body.</p>
+    <p>POST /img-downlaod/ -> uplaod the image in the body.</p>
+    <p>POST /img-filter/ -> grayscale or blur -> uplaod the image, and insert filter in the body.</p>
 
     `);
 });
@@ -28,8 +28,10 @@ app.get("/", (req: Request, res: Response) => {
 app.use(routes);
 
 app.use((err: Error, req: Request, res: Response, next: any) => {
-  console.error(err.stack);
   res.status(500).send(err.message);
+});
+app.all("*", (req, res) => {
+  res.status(404).send("Pequest not suported");
 });
 
 function start() {
