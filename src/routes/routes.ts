@@ -5,32 +5,39 @@ const files_middleware = require("../middlewares/files_middleware");
 
 router.post(
   "/img-upload",
-  files_middleware.single("filename"),
+  files_middleware.upload.single("filename"),
+  files_middleware.uplaodValidator,
   controller.img_upload
 );
 
 router.post(
-  "/img-resize", //?:height&:width
-  files_middleware.single("filename"),
+  "/img-resize",
+  files_middleware.upload.single("filename"),
+  files_middleware.resizeValidator,
   controller.img_resize
 );
 
 router.post(
-  "/img-crop", //?:height&:width&:top$:left
-  files_middleware.single("filename"),
+  "/img-crop",
+  files_middleware.upload.single("filename"),
+  files_middleware.cropValidator,
   controller.img_crop
 );
 
 router.post(
   "/img-downlaod",
-  files_middleware.single("filename"),
+  files_middleware.upload.single("filename"),
+  files_middleware.downlaodValidator,
   controller.img_download
 );
 
 router.post(
-  "/img-filter", //?:/filter
-  files_middleware.single("filename"),
+  "/img-filter",
+  files_middleware.upload.single("filename"),
+  files_middleware.filterValidator,
   controller.img_filter
 );
+
+//handle if user ask for none existing rout os function
 
 module.exports = router;

@@ -12,12 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.img_filter = exports.img_download = exports.img_crop = exports.img_resize = exports.img_upload = void 0;
 const sharp = require("sharp");
 const path = require("path");
+const { validationResult } = require("express-validator");
 const img_upload = (req, res) => {
     try {
-        if (!req.file) {
-            return res
-                .status(400)
-                .send({ status: "error", message: "Failed to upload file." });
+        console.log(req);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                success: false,
+                errors: errors.array(),
+            });
         }
         res.send({
             status: "success",
@@ -34,14 +38,16 @@ const img_upload = (req, res) => {
 exports.img_upload = img_upload;
 const img_resize = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        if (!req.file) {
-            return res
-                .status(400)
-                .send({ status: "error", message: "No file uploaded." });
+        const errors = validationResult(req);
+        if (!errors.isEmpty() || !req.file) {
+            return res.status(400).json({
+                success: false,
+                errors: errors.array(),
+            });
         }
         const outputPath = path.join(__dirname, "../../uploads/resized/", "resized-" + req.file.filename);
-        const height = req.query.height;
-        const width = req.query.width;
+        const height = req.body.height; //todo: add to body - change all
+        const width = req.body.width;
         yield sharp(req.file.path)
             .resize(parseInt(width), parseInt(height), { fit: "fill" })
             .toFile(outputPath);
@@ -62,10 +68,12 @@ const img_resize = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.img_resize = img_resize;
 const img_crop = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        if (!req.file) {
-            return res
-                .status(400)
-                .send({ status: "error", message: "No file uploaded." });
+        const errors = validationResult(req);
+        if (!errors.isEmpty() || !req.file) {
+            return res.status(400).json({
+                success: false,
+                errors: errors.array(),
+            });
         }
         const outputPath = path.join(__dirname, "../../uploads/cropped/", "cropped-" + req.file.filename);
         const left = req.query.left;

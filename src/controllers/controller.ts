@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 const sharp = require("sharp");
 const path = require("path");
+const { validationResult } = require("express-validator");
 
 declare global {
   namespace Express {
@@ -16,10 +17,15 @@ declare global {
 
 export const img_upload = (req: Request, res: Response) => {
   try {
-    if (!req.file) {
-      return res
-        .status(400)
-        .send({ status: "error", message: "Failed to upload file." });
+    console.log(req);
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()[1].msg,
+      });
     }
     res.send({
       status: "success",
@@ -35,10 +41,13 @@ export const img_upload = (req: Request, res: Response) => {
 
 export const img_resize = async (req: Request, res: Response) => {
   try {
-    if (!req.file) {
-      return res
-        .status(400)
-        .send({ status: "error", message: "No file uploaded." });
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty() || !req.file) {
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()[1].msg,
+      });
     }
     const outputPath = path.join(
       __dirname,
@@ -46,8 +55,8 @@ export const img_resize = async (req: Request, res: Response) => {
       "resized-" + req.file.filename
     );
 
-    const height: any = req.query.height;
-    const width: any = req.query.width;
+    const height: any = req.body.height; //todo: add to body - change all
+    const width: any = req.body.width;
 
     await sharp(req.file.path)
       .resize(parseInt(width), parseInt(height), { fit: "fill" })
@@ -69,10 +78,13 @@ export const img_resize = async (req: Request, res: Response) => {
 
 export const img_crop = async (req: Request, res: Response) => {
   try {
-    if (!req.file) {
-      return res
-        .status(400)
-        .send({ status: "error", message: "No file uploaded." });
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty() || !req.file) {
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()[1].msg,
+      });
     }
     const outputPath = path.join(
       __dirname,
@@ -80,10 +92,10 @@ export const img_crop = async (req: Request, res: Response) => {
       "cropped-" + req.file.filename
     );
 
-    const left: any = req.query.left;
-    const top: any = req.query.top;
-    const width: any = req.query.width;
-    const height: any = req.query.height;
+    const left: any = req.body.left;
+    const top: any = req.body.top;
+    const width: any = req.body.width;
+    const height: any = req.body.height;
 
     const cropOptions = {
       left: parseInt(left), // X coordinate (horizontal offset)
@@ -110,10 +122,13 @@ export const img_crop = async (req: Request, res: Response) => {
 
 export const img_download = async (req: Request, res: Response) => {
   try {
-    if (!req.file) {
-      return res
-        .status(400)
-        .send({ status: "error", message: "No file uploaded." });
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty() || !req.file) {
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()[1].msg,
+      });
     }
 
     const outputPath = path.join(
@@ -141,12 +156,16 @@ export const img_download = async (req: Request, res: Response) => {
 
 export const img_filter = async (req: Request, res: Response) => {
   try {
-    if (!req.file) {
-      return res
-        .status(400)
-        .send({ status: "error", message: "No file uploaded." });
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty() || !req.file) {
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()[1].msg,
+      });
     }
-    const filter = req.query.filter; //grayscale, blur
+
+    const filter = req.body.filter; //grayscale, blur
     const outputPath = path.join(
       __dirname,
       `../../uploads/${filter}/`,

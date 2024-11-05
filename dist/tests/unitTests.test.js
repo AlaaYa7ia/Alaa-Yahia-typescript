@@ -100,7 +100,7 @@ function deleteFile(fileName) {
         const res = yield makeMultipartRequest(options, form);
         assert_1.strict.equal(res.statusCode, 400);
         assert_1.strict.equal(res.body.status, "error");
-        assert_1.strict.equal(res.body.message, "Failed to upload file.");
+        assert_1.strict.equal(res.body.message, "No file provided in the request");
     }));
 });
 (0, node_test_1.describe)("POST /img-resize", () => {
@@ -116,10 +116,12 @@ function deleteFile(fileName) {
     (0, node_test_1.it)("should resize image successfully", () => __awaiter(void 0, void 0, void 0, function* () {
         const form = new form_data_1.default();
         form.append("filename", fs_1.default.createReadStream(fileName));
+        form.append("height", "100");
+        form.append("width", "100");
         const options = {
             hostname: "localhost",
             port: port,
-            path: "/img-resize?width=100&height=100",
+            path: "/img-resize",
             method: "POST",
             headers: form.getHeaders(),
         };
@@ -132,7 +134,7 @@ function deleteFile(fileName) {
         const options = {
             hostname: "localhost",
             port: port,
-            path: "/img-resize?width=100&height=100",
+            path: "/img-resize",
             method: "POST",
         };
         // Empty form without a file
@@ -140,123 +142,123 @@ function deleteFile(fileName) {
         const res = yield makeMultipartRequest(options, form);
         assert_1.strict.equal(res.statusCode, 400);
         assert_1.strict.equal(res.body.status, "error");
-        assert_1.strict.equal(res.body.message, "No file uploaded.");
+        assert_1.strict.equal(res.body.message, "No file provided in the request");
     }));
 });
-(0, node_test_1.describe)("POST /img-crop", () => {
-    let server;
-    (0, node_test_1.before)((done) => __awaiter(void 0, void 0, void 0, function* () {
-        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
-        server = server_1.app.listen(port, done);
-    }));
-    (0, node_test_1.after)((done) => {
-        server.close(done);
-        (0, server_1.stop)();
-    });
-    (0, node_test_1.it)("should crop the image successfully", () => __awaiter(void 0, void 0, void 0, function* () {
-        const form = new form_data_1.default();
-        form.append("filename", fs_1.default.createReadStream(fileName));
-        const options = {
-            hostname: "localhost",
-            port: port,
-            path: "/img-crop/?left=10&top=10&width=100&height=100",
-            method: "POST",
-        };
-        const res = yield makeMultipartRequest(options, form);
-        assert_1.strict.equal(res.statusCode, 200);
-        assert_1.strict.equal(res.body.status, "success");
-        assert_1.strict.ok(res.body.filename.includes("cropped"));
-    }));
-    (0, node_test_1.it)("should return error if no file uploaded for cropping", () => __awaiter(void 0, void 0, void 0, function* () {
-        const options = {
-            hostname: "localhost",
-            port: port,
-            path: "/img-crop?width=100&height=100&top=10&left=10",
-            method: "POST",
-        };
-        const form = new form_data_1.default();
-        const res = yield makeMultipartRequest(options, form);
-        assert_1.strict.equal(res.statusCode, 400);
-        assert_1.strict.equal(res.body.status, "error");
-        assert_1.strict.equal(res.body.message, "No file uploaded.");
-    }));
-});
-(0, node_test_1.describe)("POST /img-download", () => {
-    let server;
-    (0, node_test_1.before)((done) => __awaiter(void 0, void 0, void 0, function* () {
-        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
-        server = server_1.app.listen(port, done);
-    }));
-    (0, node_test_1.after)((done) => {
-        server.close(done);
-        (0, server_1.stop)();
-    });
-    (0, node_test_1.it)("should return error if no file uploaded for download", () => __awaiter(void 0, void 0, void 0, function* () {
-        const options = {
-            hostname: "localhost",
-            port: port,
-            path: "/img-downlaod",
-            method: "POST",
-        };
-        const form = new form_data_1.default();
-        const res = yield makeMultipartRequest(options, form);
-        assert_1.strict.equal(res.statusCode, 400);
-        assert_1.strict.equal(res.body.status, "error");
-        assert_1.strict.equal(res.body.message, "No file uploaded.");
-    }));
-});
-(0, node_test_1.describe)("POST /img-filter", () => {
-    let server;
-    (0, node_test_1.before)((done) => __awaiter(void 0, void 0, void 0, function* () {
-        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
-        server = server_1.app.listen(port, done);
-    }));
-    (0, node_test_1.after)((done) => {
-        server.close(done);
-        (0, server_1.stop)();
-    });
-    (0, node_test_1.it)("should apply grayscale filter to the image", () => __awaiter(void 0, void 0, void 0, function* () {
-        const form = new form_data_1.default();
-        form.append("filename", fs_1.default.createReadStream(fileName));
-        const options = {
-            hostname: "localhost",
-            port: port,
-            path: "/img-filter?filter=grayscale",
-            method: "POST",
-            headers: form.getHeaders(),
-        };
-        const res = yield makeMultipartRequest(options, form);
-        assert_1.strict.equal(res.statusCode, 200);
-        assert_1.strict.equal(res.body.status, "success");
-        assert_1.strict.ok(res.body.filename.includes("grayscale"));
-    }));
-    (0, node_test_1.it)("should apply blur filter to the image", () => __awaiter(void 0, void 0, void 0, function* () {
-        yield deleteFile(path_1.default.resolve(__dirname, pathToUploads + "/test.jpg"));
-        const form = new form_data_1.default();
-        form.append("filename", fs_1.default.createReadStream(fileName));
-        const options = {
-            hostname: "localhost",
-            port: port,
-            path: "/img-filter?filter=blur",
-            method: "POST",
-            headers: form.getHeaders(),
-        };
-        const res = yield makeMultipartRequest(options, form);
-        assert_1.strict.equal(res.statusCode, 200);
-        assert_1.strict.equal(res.body.status, "success");
-        assert_1.strict.ok(res.body.filename.includes("blur"));
-    }));
-    (0, node_test_1.it)("should return error if no file uploaded for filtering", () => __awaiter(void 0, void 0, void 0, function* () {
-        const options = {
-            hostname: "localhost",
-            port: port,
-            path: "/img-filter?filter=grayscale",
-            method: "POST",
-        };
-        const form = new form_data_1.default();
-        const res = yield makeMultipartRequest(options, form);
-        assert_1.strict.equal(res.statusCode, 400);
-        assert_1.strict.equal(res.body.status, "error");
-        assert_1.strict.equal(res.body.message, "No file uploaded.");
-    }));
-});
+// describe("POST /img-crop", () => {
+//   let server: http.Server;
+//   before(async (done: any) => {
+//     await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+//     server = app.listen(port, done);
+//   });
+//   after((done: any) => {
+//     server.close(done);
+//     stop();
+//   });
+//   it("should crop the image successfully", async () => {
+//     const form = new FormData();
+//     form.append("filename", fs.createReadStream(fileName));
+//     const options = {
+//       hostname: "localhost",
+//       port: port,
+//       path: "/img-crop/?left=10&top=10&width=100&height=100",
+//       method: "POST",
+//     };
+//     const res = await makeMultipartRequest(options, form);
+//     assert.equal(res.statusCode, 200);
+//     assert.equal(res.body.status, "success");
+//     assert.ok(res.body.filename.includes("cropped"));
+//   });
+//   it("should return error if no file uploaded for cropping", async () => {
+//     const options = {
+//       hostname: "localhost",
+//       port: port,
+//       path: "/img-crop?width=100&height=100&top=10&left=10",
+//       method: "POST",
+//     };
+//     const form = new FormData();
+//     const res = await makeMultipartRequest(options, form);
+//     assert.equal(res.statusCode, 400);
+//     assert.equal(res.body.status, "error");
+//     assert.equal(res.body.message, "No file provided in the request");
+//   });
+// });
+// describe("POST /img-download", () => {
+//   let server: http.Server;
+//   before(async (done: any) => {
+//     await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+//     server = app.listen(port, done);
+//   });
+//   after((done: any) => {
+//     server.close(done);
+//     stop();
+//   });
+//   it("should return error if no file uploaded for download", async () => {
+//     const options = {
+//       hostname: "localhost",
+//       port: port,
+//       path: "/img-downlaod",
+//       method: "POST",
+//     };
+//     const form = new FormData();
+//     const res = await makeMultipartRequest(options, form);
+//     assert.equal(res.statusCode, 400);
+//     assert.equal(res.body.status, "error");
+//     assert.equal(res.body.message, "No file provided in the request");
+//   });
+// });
+// describe("POST /img-filter", () => {
+//   let server: http.Server;
+//   before(async (done: any) => {
+//     await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+//     server = app.listen(port, done);
+//   });
+//   after((done: any) => {
+//     server.close(done);
+//     stop();
+//   });
+//   it("should apply grayscale filter to the image", async () => {
+//     const form = new FormData();
+//     form.append("filename", fs.createReadStream(fileName));
+//     const options = {
+//       hostname: "localhost",
+//       port: port,
+//       path: "/img-filter?filter=grayscale",
+//       method: "POST",
+//       headers: form.getHeaders(),
+//     };
+//     const res = await makeMultipartRequest(options, form);
+//     assert.equal(res.statusCode, 200);
+//     assert.equal(res.body.status, "success");
+//     assert.ok(res.body.filename.includes("grayscale"));
+//   });
+//   it("should apply blur filter to the image", async () => {
+//     await deleteFile(path.resolve(__dirname, pathToUploads + "/test.jpg"));
+//     const form = new FormData();
+//     form.append("filename", fs.createReadStream(fileName));
+//     const options = {
+//       hostname: "localhost",
+//       port: port,
+//       path: "/img-filter?filter=blur",
+//       method: "POST",
+//       headers: form.getHeaders(),
+//     };
+//     const res = await makeMultipartRequest(options, form);
+//     assert.equal(res.statusCode, 200);
+//     assert.equal(res.body.status, "success");
+//     assert.ok(res.body.filename.includes("blur"));
+//   });
+//   it("should return error if no file uploaded for filtering", async () => {
+//     const options = {
+//       hostname: "localhost",
+//       port: port,
+//       path: "/img-filter?filter=grayscale",
+//       method: "POST",
+//     };
+//     const form = new FormData();
+//     const res = await makeMultipartRequest(options, form);
+//     assert.equal(res.statusCode, 400);
+//     assert.equal(res.body.status, "error");
+//     assert.equal(res.body.message, "No file provided in the request");
+//   });
+// });

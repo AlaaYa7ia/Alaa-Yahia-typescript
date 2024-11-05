@@ -1,7 +1,7 @@
 import { strict as assert } from "assert";
 import http from "http";
 import { app, stop } from "../server";
-import { describe, before, after, it, afterEach } from "node:test";
+import { describe, before, after, it } from "node:test";
 import path from "path";
 import FormData from "form-data";
 import fs from "fs";
@@ -106,7 +106,7 @@ describe("POST /img-upload", () => {
 
     assert.equal(res.statusCode, 400);
     assert.equal(res.body.status, "error");
-    assert.equal(res.body.message, "Failed to upload file.");
+    assert.equal(res.body.message, "No file provided in the request");
   });
 });
 
@@ -127,11 +127,13 @@ describe("POST /img-resize", () => {
   it("should resize image successfully", async () => {
     const form = new FormData();
     form.append("filename", fs.createReadStream(fileName));
+    form.append("height", "100");
+    form.append("width", "100");
 
     const options = {
       hostname: "localhost",
       port: port,
-      path: "/img-resize?width=100&height=100",
+      path: "/img-resize",
       method: "POST",
       headers: form.getHeaders(),
     };
@@ -147,7 +149,7 @@ describe("POST /img-resize", () => {
     const options = {
       hostname: "localhost",
       port: port,
-      path: "/img-resize?width=100&height=100",
+      path: "/img-resize",
       method: "POST",
     };
 
@@ -158,7 +160,7 @@ describe("POST /img-resize", () => {
 
     assert.equal(res.statusCode, 400);
     assert.equal(res.body.status, "error");
-    assert.equal(res.body.message, "No file uploaded.");
+    assert.equal(res.body.message, "No file provided in the request");
   });
 });
 
@@ -179,12 +181,17 @@ describe("POST /img-crop", () => {
   it("should crop the image successfully", async () => {
     const form = new FormData();
     form.append("filename", fs.createReadStream(fileName));
+    form.append("left", "10");
+    form.append("top", "10");
+    form.append("width", "100");
+    form.append("height", "100");
 
     const options = {
       hostname: "localhost",
       port: port,
-      path: "/img-crop/?left=10&top=10&width=100&height=100",
+      path: "/img-crop",
       method: "POST",
+      headers: form.getHeaders(),
     };
 
     const res = await makeMultipartRequest(options, form);
@@ -198,7 +205,7 @@ describe("POST /img-crop", () => {
     const options = {
       hostname: "localhost",
       port: port,
-      path: "/img-crop?width=100&height=100&top=10&left=10",
+      path: "/img-crop",
       method: "POST",
     };
 
@@ -208,7 +215,7 @@ describe("POST /img-crop", () => {
 
     assert.equal(res.statusCode, 400);
     assert.equal(res.body.status, "error");
-    assert.equal(res.body.message, "No file uploaded.");
+    assert.equal(res.body.message, "No file provided in the request");
   });
 });
 
@@ -240,7 +247,7 @@ describe("POST /img-download", () => {
 
     assert.equal(res.statusCode, 400);
     assert.equal(res.body.status, "error");
-    assert.equal(res.body.message, "No file uploaded.");
+    assert.equal(res.body.message, "No file provided in the request");
   });
 });
 
@@ -261,11 +268,12 @@ describe("POST /img-filter", () => {
   it("should apply grayscale filter to the image", async () => {
     const form = new FormData();
     form.append("filename", fs.createReadStream(fileName));
+    form.append("filter", "grayscale");
 
     const options = {
       hostname: "localhost",
       port: port,
-      path: "/img-filter?filter=grayscale",
+      path: "/img-filter",
       method: "POST",
       headers: form.getHeaders(),
     };
@@ -282,11 +290,12 @@ describe("POST /img-filter", () => {
 
     const form = new FormData();
     form.append("filename", fs.createReadStream(fileName));
+    form.append("filter", "blur");
 
     const options = {
       hostname: "localhost",
       port: port,
-      path: "/img-filter?filter=blur",
+      path: "/img-filter",
       method: "POST",
       headers: form.getHeaders(),
     };
@@ -302,7 +311,7 @@ describe("POST /img-filter", () => {
     const options = {
       hostname: "localhost",
       port: port,
-      path: "/img-filter?filter=grayscale",
+      path: "/img-filter",
       method: "POST",
     };
 
@@ -312,6 +321,6 @@ describe("POST /img-filter", () => {
 
     assert.equal(res.statusCode, 400);
     assert.equal(res.body.status, "error");
-    assert.equal(res.body.message, "No file uploaded.");
+    assert.equal(res.body.message, "No file provided in the request");
   });
 });
